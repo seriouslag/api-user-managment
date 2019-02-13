@@ -1,0 +1,7 @@
+app:
+  name: api-user-management
+
+jwt:
+  header: Authorization
+  expires_in: 900 # 5 minutes
+  secret: queenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoriaqueenvictoria
