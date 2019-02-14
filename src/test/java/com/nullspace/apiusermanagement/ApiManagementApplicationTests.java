@@ -1,4 +1,4 @@
-package io.lker.apimanagement;
+package com.nullspace.apiusermanagement;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
