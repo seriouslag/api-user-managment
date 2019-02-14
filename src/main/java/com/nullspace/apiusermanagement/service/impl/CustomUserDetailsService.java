@@ -18,25 +18,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    private final Log LOGGER = LogFactory.getLog(getClass());
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    public CustomUserDetailsService(UserRepository userRepository,
+                                    PasswordEncoder passwordEncoder,
+                                    AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else {
-            return user;
         }
+
+        return user;
     }
 
     public void changePassword(String oldPassword, String newPassword) {
@@ -45,7 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String username = currentUser.getName();
 
         if (authenticationManager != null) {
-            LOGGER.debug("Re-authenticating user '"+ username + "' for password change request.");
+            LOGGER.debug("Re-authenticating user '" + username + "' for password change request.");
 
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, oldPassword));
         } else {
@@ -54,7 +57,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             return;
         }
 
-        LOGGER.debug("Changing password for user '"+ username + "'");
+        LOGGER.debug("Changing password for user '" + username + "'");
 
         User user = (User) loadUserByUsername(username);
 

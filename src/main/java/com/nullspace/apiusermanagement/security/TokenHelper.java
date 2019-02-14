@@ -1,10 +1,10 @@
 package com.nullspace.apiusermanagement.security;
 
+import com.nullspace.apiusermanagement.common.TimeProvider;
+import com.nullspace.apiusermanagement.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import com.nullspace.apiusermanagement.common.TimeProvider;
-import com.nullspace.apiusermanagement.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,10 +33,14 @@ public class TokenHelper {
     static final String AUDIENCE_MOBILE = "mobile";
     static final String AUDIENCE_TABLET = "tablet";
 
-    @Autowired
-    TimeProvider timeProvider;
+    private final TimeProvider timeProvider;
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
+
+    @Autowired
+    public TokenHelper(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
+    }
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -80,7 +84,7 @@ public class TokenHelper {
             refreshedToken = Jwts.builder()
                     .setClaims(claims)
                     .setExpiration(generateExpirationDate())
-                    .signWith( SIGNATURE_ALGORITHM, SECRET )
+                    .signWith(SIGNATURE_ALGORITHM, SECRET)
                     .compact();
         } catch (Exception e) {
             refreshedToken = null;
@@ -91,12 +95,12 @@ public class TokenHelper {
     public String generateToken(String username) {
         String audience = generateAudience();
         return Jwts.builder()
-                .setIssuer( APP_NAME )
+                .setIssuer(APP_NAME)
                 .setSubject(username)
                 .setAudience(audience)
                 .setIssuedAt(timeProvider.now())
                 .setExpiration(generateExpirationDate())
-                .signWith( SIGNATURE_ALGORITHM, SECRET )
+                .signWith(SIGNATURE_ALGORITHM, SECRET)
                 .compact();
     }
 
@@ -143,16 +147,16 @@ public class TokenHelper {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public String getToken( HttpServletRequest request ) {
-        String authHeader = getAuthHeaderFromHeader( request );
-        if ( authHeader != null && authHeader.startsWith("Bearer ")) {
+    public String getToken(HttpServletRequest request) {
+        String authHeader = getAuthHeaderFromHeader(request);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
         return null;
     }
 
-    private String getAuthHeaderFromHeader( HttpServletRequest request ) {
+    private String getAuthHeaderFromHeader(HttpServletRequest request) {
         return request.getHeader(AUTH_HEADER);
     }
 

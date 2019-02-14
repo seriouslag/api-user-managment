@@ -6,25 +6,15 @@ import org.joda.time.DateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
-@Table(name="users")
-public class User extends BaseEntity implements UserDetails{
+@Table(name = "users")
+public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "username")
     private String username;
@@ -59,7 +49,7 @@ public class User extends BaseEntity implements UserDetails{
 
 
     public User(Long id, String firstName, String lastName,
-                String email, String password){
+                String email, String password) {
         super(id);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -70,7 +60,7 @@ public class User extends BaseEntity implements UserDetails{
     }
 
     public User(Long id, String firstName, String lastName,
-                String emailAddress, String password, String username){
+                String emailAddress, String password, String username) {
         super(id);
         this.firstName = firstName;
         this.lastName = lastName;
@@ -102,7 +92,7 @@ public class User extends BaseEntity implements UserDetails{
 
     public void setPassword(String password) {
         Timestamp now = new Timestamp(DateTime.now().getMillis());
-        this.setLastPasswordResetDate( now );
+        this.setLastPasswordResetDate(now);
         this.password = password;
     }
 

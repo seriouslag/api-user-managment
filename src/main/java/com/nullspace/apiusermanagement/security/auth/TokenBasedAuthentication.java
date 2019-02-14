@@ -9,8 +9,8 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
     private String token;
     private final UserDetails principle;
 
-    TokenBasedAuthentication( UserDetails principle ) {
-        super( principle.getAuthorities() );
+    TokenBasedAuthentication(UserDetails principle) {
+        super(principle.getAuthorities());
         this.principle = principle;
     }
 
@@ -18,7 +18,7 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
         return token;
     }
 
-    void setToken( String token ) {
+    void setToken(String token) {
         this.token = token;
     }
 
@@ -36,5 +36,4 @@ public class TokenBasedAuthentication extends AbstractAuthenticationToken {
     public UserDetails getPrincipal() {
         return principle;
     }
-
 }

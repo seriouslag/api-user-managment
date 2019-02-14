@@ -8,11 +8,11 @@ import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
-@Table(name="authority")
+@Table(name = "authority")
 public class Authority extends BaseEntity implements GrantedAuthority {
 
-    @Enumerated( EnumType.STRING)
-    @Column(name="name")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "name")
     private UserRoleName name;
 
     public Authority(Long id, UserRoleName name) {

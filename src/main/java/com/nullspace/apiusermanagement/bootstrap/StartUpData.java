@@ -27,7 +27,7 @@ public class StartUpData implements CommandLineRunner {
         loadData();
     }
 
-    private void loadData(){
+    private void loadData() {
 
         // Roles
         Authority adminAuth = new Authority(10L, UserRoleName.ROLE_ADMIN);
@@ -46,6 +46,7 @@ public class StartUpData implements CommandLineRunner {
 
         User user3 = new User(3L, "Landon", "Gavin", "Landongavin@example.com", bCryptPasswordEncoder.encode("test3"), "lgavin");
         user3.setAuthorities(adminAuthorities);
+
 //        User user1 = User.builder().id(1L).firstName("Ryan").lastName("Walker")
 //                .emailAddress("ryanwalker@example.com")
 //                .password(bCryptPasswordEncoder.encode("test"))

@@ -6,7 +6,6 @@ import com.nullspace.apiusermanagement.security.TokenHelper;
 import com.nullspace.apiusermanagement.security.auth.JwtAuthenticationRequest;
 import com.nullspace.apiusermanagement.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,25 +21,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping( value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE )
+@RequestMapping(value = "/api/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
-    @Autowired
-    TokenHelper tokenHelper;
-
-    @Lazy
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final TokenHelper tokenHelper;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
-
+    public AuthenticationController(TokenHelper tokenHelper,
+                                    CustomUserDetailsService userDetailsService,
+                                    AuthenticationManager authenticationManager) {
+        this.tokenHelper = tokenHelper;
+        this.userDetailsService = userDetailsService;
+        this.authenticationManager = authenticationManager;
+    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(
@@ -60,8 +60,8 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // token creation
-        User user = (User)authentication.getPrincipal();
-        String jws = tokenHelper.generateToken( user.getUsername());
+        User user = (User) authentication.getPrincipal();
+        String jws = tokenHelper.generateToken(user.getUsername());
         int expiresIn = tokenHelper.getExpiredIn();
         // Return the token
         return ResponseEntity.ok(new UserTokenState(jws, expiresIn));
@@ -72,9 +72,9 @@ public class AuthenticationController {
             HttpServletRequest request,
             HttpServletResponse response,
             Principal principal
-            ) {
+    ) {
 
-        String authToken = tokenHelper.getToken( request );
+        String authToken = tokenHelper.getToken(request);
 
         if (authToken != null && principal != null) {
 
@@ -94,7 +94,7 @@ public class AuthenticationController {
     public ResponseEntity<?> changePassword(@RequestBody PasswordChanger passwordChanger) {
         userDetailsService.changePassword(passwordChanger.oldPassword, passwordChanger.newPassword);
         Map<String, String> result = new HashMap<>();
-        result.put( "result", "success" );
+        result.put("result", "success");
         return ResponseEntity.accepted().body(result);
     }
 

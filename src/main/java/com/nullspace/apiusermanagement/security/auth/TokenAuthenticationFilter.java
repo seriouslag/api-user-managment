@@ -1,4 +1,5 @@
 package com.nullspace.apiusermanagement.security.auth;
+
 import com.nullspace.apiusermanagement.security.TokenHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +28,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-
     @Override
     public void doFilterInternal(
             HttpServletRequest request,
@@ -54,5 +54,4 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
-
 }
