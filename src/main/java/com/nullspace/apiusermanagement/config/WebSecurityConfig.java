@@ -7,6 +7,7 @@ import com.nullspace.apiusermanagement.service.impl.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -29,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenHelper tokenHelper;
 
     @Autowired
-    public WebSecurityConfig(CustomUserDetailsService userDetailsService, RestAuthenticationEntryPoint entryPoint, TokenHelper tokenHelper) {
+    public WebSecurityConfig(@Lazy CustomUserDetailsService userDetailsService, RestAuthenticationEntryPoint entryPoint, TokenHelper tokenHelper) {
         this.jwtUserDetailsService = userDetailsService;
         this.restAuthenticationEntryPoint = entryPoint;
         this.tokenHelper = tokenHelper;
