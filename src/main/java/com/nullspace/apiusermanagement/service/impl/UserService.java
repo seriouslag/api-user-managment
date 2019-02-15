@@ -26,12 +26,19 @@ public class UserService implements IUserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
     public User findById(Long id) throws AccessDeniedException {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User with id was not found"));
     }
 
+    @Override
+    public Boolean exists(Long id) {
+        return userRepository.existsById(id);
+    }
 
+
+    @Override
     public User update(User updatedUser) {
         User oldUser = userRepository.findById(updatedUser.getId()).orElseThrow(NotFound::new);
         if (!updatedUser.getFirstName().isEmpty()) {
@@ -65,6 +72,7 @@ public class UserService implements IUserService {
         userRepository.deleteById(aLong);
     }
 
+    @Override
     public List<User> findAll() throws AccessDeniedException {
         return userRepository.findAll();
     }

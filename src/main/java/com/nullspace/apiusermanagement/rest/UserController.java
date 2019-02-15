@@ -6,10 +6,7 @@ import com.nullspace.apiusermanagement.service.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -64,5 +61,11 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public User user(Principal user) {
         return this.userService.findByUsername(user.getName());
+    }
+
+    @PreAuthorize("@securityService.isUser(#authorization, #userId) or hasRole('ROLE_ADMIN')")
+    @RequestMapping(method = GET, value = "/test/{userId}")
+    public boolean test(@PathVariable Long userId, @RequestHeader("Authorization") String authorization) {
+        return true;
     }
 }

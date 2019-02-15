@@ -2,11 +2,14 @@ package com.nullspace.apiusermanagement.security;
 
 import com.nullspace.apiusermanagement.common.TimeProvider;
 import com.nullspace.apiusermanagement.model.User;
+import com.nullspace.apiusermanagement.service.impl.CustomUserDetailsService;
+import com.nullspace.apiusermanagement.service.interfaces.IUserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +40,14 @@ public class TokenHelper {
 
     private SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
+    private final CustomUserDetailsService userDetailsService;
+    private final IUserService userService;
+
     @Autowired
-    public TokenHelper(TimeProvider timeProvider) {
+    public TokenHelper(TimeProvider timeProvider, @Lazy CustomUserDetailsService userDetailsService, IUserService userService) {
         this.timeProvider = timeProvider;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
 
     public String getUsernameFromToken(String token) {
@@ -64,6 +72,26 @@ public class TokenHelper {
         return issueAt;
     }
 
+    public User getUserFromAuthHeaderIfValid(String authorization) {
+        String token = getToken(authorization);
+        if(token.equals("")) { return null; }
+
+        // Error check this
+        String username = getUsernameFromToken(token);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        boolean isValid = validateToken(token, userDetails);
+
+        // Replace with token not valid error
+        if(!isValid) { return null; }
+
+        // Error check if user is found
+        User user = userService.findByUsername(username);
+
+        return user;
+    }
+
     public String getAudienceFromToken(String token) {
         String audience;
         try {
@@ -84,6 +112,7 @@ public class TokenHelper {
             refreshedToken = Jwts.builder()
                     .setClaims(claims)
                     .setExpiration(generateExpirationDate())
+                    // replace secret with key
                     .signWith(SIGNATURE_ALGORITHM, SECRET)
                     .compact();
         } catch (Exception e) {
@@ -100,6 +129,7 @@ public class TokenHelper {
                 .setAudience(audience)
                 .setIssuedAt(timeProvider.now())
                 .setExpiration(generateExpirationDate())
+                // replace secret with key
                 .signWith(SIGNATURE_ALGORITHM, SECRET)
                 .compact();
     }
@@ -147,13 +177,17 @@ public class TokenHelper {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public String getToken(HttpServletRequest request) {
-        String authHeader = getAuthHeaderFromHeader(request);
+    public String getToken(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.substring(7);
         }
 
         return null;
+    }
+
+    public String getToken(HttpServletRequest request) {
+        String authHeader = getAuthHeaderFromHeader(request);
+        return getToken(authHeader);
     }
 
     private String getAuthHeaderFromHeader(HttpServletRequest request) {
