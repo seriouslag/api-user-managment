@@ -13,7 +13,6 @@ import java.util.List;
 
 @Service
 public class UserService implements IUserService {
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -27,13 +26,18 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
     public User findById(Long id) throws AccessDeniedException {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User with id was not found"));
     }
 
     @Override
-    public Boolean exists(Long id) {
+    public boolean exists(Long id) {
         return userRepository.existsById(id);
     }
 
@@ -76,5 +80,4 @@ public class UserService implements IUserService {
     public List<User> findAll() throws AccessDeniedException {
         return userRepository.findAll();
     }
-
 }

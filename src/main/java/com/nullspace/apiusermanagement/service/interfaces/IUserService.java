@@ -11,7 +11,9 @@ public interface IUserService extends ICrudService<User, Long> {
 
     User findByUsername(String username);
 
+    boolean existsByUsername(String username);
+
     List<User> findAll();
 
-    Boolean exists(Long id);
+    boolean exists(Long id);
 }

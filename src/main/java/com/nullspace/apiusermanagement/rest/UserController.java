@@ -25,8 +25,8 @@ public class UserController {
     }
 
     @RequestMapping(method = GET, value = "/user/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public User loadById(@PathVariable Long userId) {
+    @PreAuthorize("@securityService.isUser(#authorization, #userId) or hasRole('ROLE_ADMIN')")
+    public User loadById(@PathVariable Long userId, @RequestHeader("Authorization") String authorization) {
         return this.userService.findById(userId);
     }
 
@@ -63,9 +63,9 @@ public class UserController {
         return this.userService.findByUsername(user.getName());
     }
 
-    @PreAuthorize("@securityService.isUser(#authorization, #userId) or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("@securityService.isUser(#user, #userId)")
     @RequestMapping(method = GET, value = "/test/{userId}")
-    public boolean test(@PathVariable Long userId, @RequestHeader("Authorization") String authorization) {
+    public boolean test2(Principal user, @PathVariable Long userId) {
         return true;
     }
 }
